@@ -1,0 +1,22 @@
+- [x] .nvmrc
+- [x] .editorconfig
+- [x] LICENSE
+- [x] vite.config.ts
+- [x] vitest.config.ts
+- [x] prettier
+- [x] eslint
+- [x] .env.development
+- [x] scripts de para rodar testes, lint, prettier
+- [x] infra
+- [x] src
+- [x] testes
+- [x] banco de dados
+- [x] API
+  - [x] /status - api/testes
+  - [x] /migrations - api/testes
+  - [x] /users - api/testes
+- [] husky
+- [] ci / github / workflow
+- [X] front end /status
+
+
