@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "pnpm run services:up && pnpm run services:wait:database && pnpm run migrations:up && vite dev",
+		"dev": "npm run services:up && npm run services:wait:database && npm run migrations:up && vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "husky",
@@ -23,8 +23,8 @@
 		"services:wait:database": "node infra/scripts/wait-for-postgres.js",
 		"migrations:create": "node-pg-migrate -m infra/migrations create",
 		"migrations:up": "node-pg-migrate -m infra/migrations --envPath .env.development up",
-		"posttest": "pnpm run services:stop",
-		"test": "pnpm run services:up && concurrently -n vite,vitest -k -s command-vitest \"vite dev\" \"vitest --no-file-parallelism\"",
+		"posttest": "npm run services:stop",
+		"test": "npm run services:up && concurrently -n vite,vitest -k -s command-vitest \"vite dev\" \"vitest --no-file-parallelism\"",
 		"commit": "cz"
 	},
 	"devDependencies": {
@@ -49,8 +49,8 @@
 		"prettier": "^3.4.2",
 		"prettier-plugin-svelte": "^3.3.3",
 		"svelte": "^5.26.1",
+    "typescript": "^5.0.0",
 		"svelte-check": "^4.0.0",
-		"typescript": "^5.0.0",
 		"typescript-eslint": "^8.20.0",
 		"vite": "^6.2.5",
 		"vitest": "^3.1.1"
