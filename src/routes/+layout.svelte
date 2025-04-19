@@ -1,17 +1,12 @@
 <script lang="ts">
-	import { QueryClientProvider, type QueryClient } from '@tanstack/svelte-query';
+	import { QueryClientProvider } from '@tanstack/svelte-query';
 	import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
-	import type { Snippet } from 'svelte';
+	import type { LayoutProps } from './$types';
 
-	interface Props {
-		children: Snippet;
-		queryClient: QueryClient;
-	}
-
-	let { children, queryClient }: Props = $props();
+	let { children, data }: LayoutProps = $props();
 </script>
 
-<QueryClientProvider client={queryClient}>
+<QueryClientProvider client={data.queryClient}>
 	{@render children()}
 	<SvelteQueryDevtools />
 </QueryClientProvider>
