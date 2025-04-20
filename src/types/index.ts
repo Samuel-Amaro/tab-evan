@@ -4,4 +4,3 @@ export interface ErrorInterface {
 	statusCode?: number;
 	action?: string;
 }
-
