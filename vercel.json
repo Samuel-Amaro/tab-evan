@@ -1,7 +1,7 @@
 {
 	"$schema": "https://openapi.vercel.sh/vercel.json",
 	"functions": {
-		"api/**.[jt]s": {
+		"src/routes/api/**.[jt]s": {
 			"includeFiles": "infra/migrations/**"
 		}
 	}
