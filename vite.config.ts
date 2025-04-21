@@ -1,6 +1,7 @@
 import { svelteTesting } from '@testing-library/svelte/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig, loadEnv } from 'vite';
+import path from 'path';
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), '');
@@ -42,6 +43,11 @@ export default defineConfig(({ mode }) => {
 					}
 				}
 			]
-		}
+		},
+    resolve: {
+      alias: {
+        $infra: path.resolve(__dirname)
+      }
+    }
 	};
 });
