@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "npm run services:up && npm run services:wait:database && npm run migrations:up && vite dev",
 		"build": "vite build",
-		"preview": "vite preview",
+		"preview": "npm run services:up && npm run services:wait:database && npm run migrations:up && vite preview",
 		"prepare": "husky",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
