@@ -13,6 +13,8 @@ function getOptions(client: Client, dryRun: boolean = false) {
 		log: () => {},
 		migrationsTable: 'pgmigrations'
 	};
+	console.log('dir: ', resolve('src/infra', 'migrations'));
+	console.log('cwd: ', process.cwd(), '/src/infra/migrations');
 	return defaultMigrationOptions;
 }
 
