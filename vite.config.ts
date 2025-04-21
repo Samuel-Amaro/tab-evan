@@ -44,10 +44,10 @@ export default defineConfig(({ mode }) => {
 				}
 			]
 		},
-    resolve: {
-      alias: {
-        $infra: path.resolve(__dirname)
-      }
-    }
+		resolve: {
+			alias: {
+				$infra: path.resolve(__dirname)
+			}
+		}
 	};
 });

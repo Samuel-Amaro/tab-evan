@@ -1,6 +1,6 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 import migrator from '../../../../models/migrator';
-import controller from '../../../../../infra/controller';
+import controller from '../../../../infra/controller';
 
 export const GET: RequestHandler = async () => {
 	try {

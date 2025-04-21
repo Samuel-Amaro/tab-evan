@@ -2,8 +2,8 @@ import { json } from '@sveltejs/kit';
 import {
 	InternalServerError,
 	MethodNotAllowedError,
-	ValidationError,
-	NotFoundError
+	NotFoundError,
+	ValidationError
 } from './errors';
 
 const controller = {

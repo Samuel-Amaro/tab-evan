@@ -1,6 +1,6 @@
 import retry from 'async-retry';
 import migrator from '../src/models/migrator';
-import database from '../infra/database';
+import database from '../src/infra/database';
 
 /**
  * * Agurda todos os serviços estarem prontos

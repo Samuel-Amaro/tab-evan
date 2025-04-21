@@ -17,21 +17,23 @@
 		"lint:prettier:fix": "prettier --write .",
 		"lint:eslint:check": "eslint .",
 		"lint:eslint:fix": "eslint --fix .",
-		"services:up": "docker compose -f infra/compose.yaml up -d",
-		"services:stop": "docker compose -f infra/compose.yaml stop",
-		"services:down": "docker compose -f infra/compose.yaml down",
-		"services:wait:database": "node infra/scripts/wait-for-postgres.js",
-		"migrations:create": "node-pg-migrate -m infra/migrations create",
-		"migrations:up": "node-pg-migrate -m infra/migrations --envPath .env.development up",
+		"services:up": "docker compose -f compose.yaml up -d",
+		"services:stop": "docker compose -f compose.yaml stop",
+		"services:down": "docker compose -f compose.yaml down",
+		"services:wait:database": "node src/infra/scripts/wait-for-postgres.js",
+		"migrations:create": "node-pg-migrate -m src/infra/migrations create",
+		"migrations:up": "node-pg-migrate -m src/infra/migrations --envPath .env.development up",
 		"posttest": "npm run services:stop",
 		"test": "npm run services:up && concurrently -n vite,vitest -k -s command-vitest \"vite dev\" \"wait-on .svelte-kit/tsconfig.json && vitest --no-file-parallelism\"",
-		"commit": "cz"
+		"commit": "cz",
+		"secretlint": "npx secretlint \"**/*\""
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^19.8.0",
 		"@commitlint/config-conventional": "^19.8.0",
 		"@eslint/compat": "^1.2.5",
 		"@eslint/js": "^9.18.0",
+		"@secretlint/secretlint-rule-preset-recommend": "^9.3.1",
 		"@sveltejs/adapter-auto": "^6.0.0",
 		"@sveltejs/kit": "^2.20.7",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
@@ -48,6 +50,7 @@
 		"node-pg-migrate": "^7.9.1",
 		"prettier": "^3.4.2",
 		"prettier-plugin-svelte": "^3.3.3",
+		"secretlint": "^9.3.1",
 		"svelte": "^5.28.1",
 		"svelte-check": "^4.0.0",
 		"typescript": "^5.0.0",
@@ -80,5 +83,16 @@
 		"commitizen": {
 			"path": "./node_modules/cz-conventional-changelog"
 		}
+	},
+	"lint-staged": {
+		"*.{js,ts}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.{json,css,scss,md,html}": [
+			"prettier --write"
+		],
+		".css": "stylehint",
+		".svelte": "npm run check"
 	}
 }

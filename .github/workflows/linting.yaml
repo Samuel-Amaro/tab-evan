@@ -15,6 +15,7 @@ jobs:
 
       - run: npm ci
 
+      - name: Check format with Prettier
       - run: npm run lint:prettier:check
   eslint:
     name: Eslint
@@ -28,7 +29,22 @@ jobs:
 
       - run: npm ci
 
+      - name: Check code quality with ESLint
       - run: npm run lint:eslint:check
+  svelte:
+    name: svelte
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/jod'
+
+      - run: npm ci
+
+      - name: Check code quality with Svelte
+        run: npm run check
   commitlint:
     name: commitlint
     runs-on: ubuntu-latest
