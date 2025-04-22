@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
 				targets: [
 					{
 						src: 'src/infra/migrations/*',
-						dest: 'src/infra/migrations'
+						dest: './src/infra/migrations'
 					}
 				]
 			})
