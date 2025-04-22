@@ -10,11 +10,10 @@ function getOptions(client: Client, dryRun: boolean = false) {
 		dryRun: dryRun,
 		dir: resolve('src/infra', 'migrations'),
 		direction: 'up',
-		log: () => {},
+		log: console.error,
 		migrationsTable: 'pgmigrations'
 	};
-	console.log('dir: ', resolve('src/infra', 'migrations'));
-	console.log('cwd: ', process.cwd(), '/src/infra/migrations');
+
 	return defaultMigrationOptions;
 }
 
