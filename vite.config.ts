@@ -1,26 +1,12 @@
 import { svelteTesting } from '@testing-library/svelte/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig, loadEnv, normalizePath } from 'vite';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
-import path from 'node:path';
-
-normalizePath(path.resolve(__dirname, 'src/infra/migrations'));
+import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), '');
 
 	return {
-		plugins: [
-			sveltekit(),
-			viteStaticCopy({
-				targets: [
-					{
-						src: 'src/infra/migrations/*',
-						dest: './src/infra/migrations'
-					}
-				]
-			})
-		],
+		plugins: [sveltekit()],
 		server: {
 			host: true
 		},
