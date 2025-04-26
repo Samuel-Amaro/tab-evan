@@ -10,7 +10,9 @@ function getOptions(client: Client, dryRun: boolean = false) {
 		dryRun: dryRun,
 		dir: path.join(
 			process.cwd(),
-			import.meta.env.MODE === 'production' ? 'migrations' : 'infra/migrations'
+			import.meta.env.MODE === 'production'
+				? '.svelte-kit/output/server/migrations'
+				: 'infra/migrations'
 		),
 		direction: 'up',
 		log: console.error,
