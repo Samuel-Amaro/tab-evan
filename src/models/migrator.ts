@@ -1,14 +1,17 @@
 import path from 'path';
 import type { Client } from 'pg';
 import runner, { type RunnerOption } from 'node-pg-migrate';
-import database from '../infra/database';
-import { ServiceError } from '../infra/errors';
+import database from '../../infra/database';
+import { ServiceError } from '../../infra/errors';
 
 function getOptions(client: Client, dryRun: boolean = false) {
 	const defaultMigrationOptions: RunnerOption = {
 		dbClient: client,
 		dryRun: dryRun,
-		dir: path.join(process.cwd(), 'src/infra/migrations/'),
+		dir: path.join(
+			process.cwd(),
+			import.meta.env.MODE === 'production' ? 'migrations' : 'infra/migrations'
+		),
 		direction: 'up',
 		log: console.error,
 		migrationsTable: 'pgmigrations'

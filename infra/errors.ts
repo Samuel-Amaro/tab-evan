@@ -1,4 +1,4 @@
-import type { ErrorInterface } from '../types';
+import type { ErrorInterface } from '../src/types';
 
 export class InternalServerError extends Error {
 	action: string;
