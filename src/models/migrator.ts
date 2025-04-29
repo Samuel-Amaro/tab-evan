@@ -10,7 +10,7 @@ function getOptions(client: Client, dryRun: boolean = false) {
 		dryRun: dryRun,
 		dir:
 			import.meta.env.MODE === 'production'
-				? '/migrations'
+				? '/migrations/1744329257724_create-users.js'
 				: `${path.join(process.cwd(), 'infra/migrations')}`,
 		direction: 'up',
 		log: console.error,
