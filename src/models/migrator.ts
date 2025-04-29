@@ -8,10 +8,10 @@ function getOptions(client: Client, dryRun: boolean = false) {
 	const defaultMigrationOptions: RunnerOption = {
 		dbClient: client,
 		dryRun: dryRun,
-		dir: path.join(
-			process.cwd(),
-			import.meta.env.MODE === 'production' ? '/migrations' : 'infra/migrations'
-		),
+		dir:
+			import.meta.env.MODE === 'production'
+				? '/migrations'
+				: `${path.join(process.cwd(), 'infra/migrations')}`,
 		direction: 'up',
 		log: console.error,
 		migrationsTable: 'pgmigrations'
