@@ -1,9 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { exec } = require('node:child_process');
+import { exec } from 'node:child_process';
 
 function checkPostgres() {
 	exec('docker exec postgres-dev pg_isready --host localhost', handleReturn);
 
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-expect-error
 	function handleReturn(error, stdout) {
 		if (stdout.search('accepting connections') === -1) {
 			process.stdout.write('.');

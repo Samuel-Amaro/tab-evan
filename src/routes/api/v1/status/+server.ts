@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/private';
-import { json, type RequestHandler } from '@sveltejs/kit';
-import database from '../../../../../infra/database';
 import controller from '../../../../../infra/controller';
+import database from '../../../../../infra/database';
+import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async () => {
 	try {

@@ -1,5 +1,5 @@
 import database from '../../infra/database';
-import { ValidationError, NotFoundError } from '../../infra/errors';
+import { NotFoundError, ValidationError } from '../../infra/errors';
 import type { TypeUser, TypeUserValues } from '../types/user';
 
 async function create(values: TypeUserValues) {
