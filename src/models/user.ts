@@ -1,10 +1,12 @@
 import database from '../../infra/database';
 import { NotFoundError, ValidationError } from '../../infra/errors';
 import type { TypeUser, TypeUserValues } from '../types/user';
+import password from './password';
 
 async function create(values: TypeUserValues) {
 	await validateUniqueEmail(values.email);
 	await validateUniqueUsername(values.username);
+	await hashPasswordInObject(values);
 
 	const newUser = await runInsertQuery(values);
 	return newUser;
@@ -51,6 +53,11 @@ async function create(values: TypeUserValues) {
 				cause: 'function validateUniqueEmail in model user function create'
 			});
 		}
+	}
+
+	async function hashPasswordInObject(values: TypeUserValues) {
+		const hashedPassword = await password.hash(values.password);
+		values.password = hashedPassword;
 	}
 
 	async function runInsertQuery(values: TypeUserValues) {
