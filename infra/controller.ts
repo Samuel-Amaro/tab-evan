@@ -3,6 +3,7 @@ import {
 	InternalServerError,
 	MethodNotAllowedError,
 	NotFoundError,
+	UnauthorizedError,
 	ValidationError
 } from './errors';
 
@@ -14,7 +15,11 @@ const controller = {
 		});
 	},
 	onErrorHandler: (error: unknown, statusCode?: number) => {
-		if (error instanceof ValidationError || error instanceof NotFoundError) {
+		if (
+			error instanceof ValidationError ||
+			error instanceof NotFoundError ||
+			error instanceof UnauthorizedError
+		) {
 			return json(error, {
 				status: error?.statusCode
 			});
