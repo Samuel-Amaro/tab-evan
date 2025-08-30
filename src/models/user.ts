@@ -193,11 +193,44 @@ async function update(username: string, values: Partial<TypeUserValues>) {
 	}
 }
 
+async function findOneById(id: string) {
+	const userFound = await runSelectQuery(id);
+
+	return userFound;
+
+	async function runSelectQuery(idUser: string) {
+		const results = await database.query({
+			text: `
+      SELECT
+        *
+      FROM
+        users
+      WHERE
+        id = $1
+      LIMIT
+        1
+      ;`,
+			values: [idUser]
+		});
+
+		if (results.rowCount === 0) {
+			throw new NotFoundError({
+				message: 'O id informando não foi encontrado no sistema.',
+				action: 'Verifique se o id está digitado corretamente.',
+				cause: 'function findOneById in model user'
+			});
+		}
+
+		return results.rows[0] as TypeUser;
+	}
+}
+
 const user = {
 	create,
 	findOneByUsername,
 	update,
-	findOneByEmail
+	findOneByEmail,
+	findOneById
 };
 
 export default user;

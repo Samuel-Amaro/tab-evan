@@ -4,6 +4,7 @@ import migrator from '../src/models/migrator';
 import database from '../infra/database';
 import type { TypeUserValues } from '../src/types/user';
 import user from '../src/models/user';
+import session from '../src/models/session';
 
 /**
  * * Agurda todos os serviços estarem prontos
@@ -43,9 +44,14 @@ async function createUser(userObj?: Partial<TypeUserValues>) {
 	});
 }
 
+async function createSession(userId: string) {
+	return await session.create(userId);
+}
+
 export default {
 	waitForAllServices,
 	clearDatabase,
 	runPendingMigrations,
-	createUser
+	createUser,
+	createSession
 };
