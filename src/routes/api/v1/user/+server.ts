@@ -14,7 +14,8 @@ export const GET: RequestHandler = async ({ cookies }) => {
 
 		return json(userFound, {
 			headers: {
-				'Set-Cookie': `session_id=${renewedSessionObject.token}; Path=/; Max-Age=${session.EXPIRATION_IN_MILLISECONDS / 1000};${import.meta.env.MODE === 'production' ? ' Secure=true;' : ''} HttpOnly=true;`
+				'Set-Cookie': `session_id=${renewedSessionObject.token}; Path=/; Max-Age=${session.EXPIRATION_IN_MILLISECONDS / 1000};${import.meta.env.MODE === 'production' ? ' Secure=true;' : ''} HttpOnly=true;`,
+				'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0'
 			}
 		});
 	} catch (error) {

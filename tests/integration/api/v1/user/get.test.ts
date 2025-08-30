@@ -140,5 +140,72 @@ describe('GET /api/v1/user', () => {
 				status_code: 404
 			});
 		});
+
+		it('With session close to expires', async () => {
+			//volta o tempo para o passado, para criar uma sessão que já se passou mais da metade do tempo para expirar
+			vi.useFakeTimers({
+				now: new Date(Date.now() - session.EXPIRATION_IN_MILLISECONDS / 2)
+			});
+
+			const createdUser = await orchestrator.createUser();
+
+			//cria a sessão que já nasceu perto de expirar
+			//tudo no mesmo processo, então o tempo "viajado" é o mesmo
+			const sessionObject = await orchestrator.createSession(createdUser.id);
+
+			//volta o tempo para o atual
+			vi.useRealTimers();
+
+			const response = await fetch('http://localhost:5173/api/v1/user', {
+				headers: {
+					Cookie: `session_id=${sessionObject.token}`
+				}
+			});
+
+			expect(response.status).toBe(200);
+
+			const cacheControlHeader = response.headers.get('Cache-Control');
+			expect(cacheControlHeader).toBe('no-store, no-cache, must-revalidate, max-age=0');
+
+			const responseBody: TypeUser = await response.json();
+
+			expect(responseBody).toEqual({
+				id: createdUser.id,
+				username: createdUser.username,
+				email: createdUser.email,
+				password: createdUser.password,
+				created_at: new Date(createdUser.created_at).toISOString(),
+				updated_at: new Date(createdUser.updated_at).toISOString()
+			});
+
+			expect(uuidVersion(responseBody.id)).toBe(4);
+			expect(Date.parse(responseBody.created_at)).not.toBeNaN();
+			expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+			//verifica se a sessão foi renovada
+			//pega a sessão novamente
+			//espera que a data de expiração e atualização sejam maiores que as anteriores
+			//pois a sessão deve ser renovada a cada requisição válida
+			const renewedSessionObject = await session.findOneValidByToken(sessionObject.token);
+
+			expect(renewedSessionObject.expires_at > sessionObject.expires_at).toEqual(true);
+			expect(renewedSessionObject.updated_at > sessionObject.updated_at).toEqual(true);
+
+			//Set-Cookie deve ser enviado com o mesmo token e nova data de expiração
+			const combinedCookieHeader = response.headers.get('Set-Cookie');
+			const splitCookieHeaders = splitCookiesString(combinedCookieHeader ?? undefined);
+
+			const parsedSetCookie = setCookieParser(splitCookieHeaders, {
+				map: true
+			});
+
+			expect(parsedSetCookie.session_id).toEqual({
+				name: 'session_id',
+				value: renewedSessionObject.token,
+				maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
+				path: '/',
+				httpOnly: true
+			});
+		});
 	});
 });
