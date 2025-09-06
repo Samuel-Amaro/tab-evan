@@ -28,6 +28,24 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 };
 
+export const DELETE: RequestHandler = async ({ cookies }) => {
+	try {
+		const sessionToken = cookies.get('session_id');
+
+		const existingSession = await session.findOneValidByToken(sessionToken);
+		const expiredSession = await session.expireById(existingSession.id);
+
+		return json(expiredSession, {
+			status: 200,
+			headers: {
+				'Set-Cookie': `session_id=invalid; Path=/; Max-Age=-1;${import.meta.env.MODE === 'production' ? ' Secure=true;' : ''} HttpOnly=true;`
+			}
+		});
+	} catch (error) {
+		return controller.onErrorHandler(error);
+	}
+};
+
 export const fallback: RequestHandler = async () => {
 	return controller.onNoMatchHandler();
 };
