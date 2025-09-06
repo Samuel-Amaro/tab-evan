@@ -15,13 +15,18 @@ const controller = {
 		});
 	},
 	onErrorHandler: (error: unknown, statusCode?: number) => {
-		if (
-			error instanceof ValidationError ||
-			error instanceof NotFoundError ||
-			error instanceof UnauthorizedError
-		) {
+		if (error instanceof ValidationError || error instanceof NotFoundError) {
 			return json(error, {
 				status: error?.statusCode
+			});
+		}
+
+		if (error instanceof UnauthorizedError) {
+			return json(error, {
+				status: error?.statusCode,
+				headers: {
+					'Set-Cookie': `session_id=invalid; Path=/; Max-Age=-1;${import.meta.env.MODE === 'production' ? ' Secure=true;' : ''} HttpOnly=true;`
+				}
 			});
 		}
 

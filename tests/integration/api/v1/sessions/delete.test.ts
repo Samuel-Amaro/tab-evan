@@ -51,7 +51,6 @@ describe('DELETE /api/v1/sessions', () => {
 				true
 			);
 
-			//Set-Cookie deve ser enviado com o mesmo token e nova data de expiração
 			const combinedCookieHeader = response.headers.get('Set-Cookie');
 			const splitCookieHeaders = splitCookiesString(combinedCookieHeader ?? undefined);
 
