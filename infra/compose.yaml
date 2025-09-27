@@ -13,3 +13,9 @@ services:
     ports:
       # - lista de relação entre porta externa/interna, porta no ambiente host(mundo de fora do container) é a porta no guest mundo dentro do container
       - '5432:5432'
+  mailcatcher:
+    container_name: 'mailcatcher-dev'
+    image: 'sj26/mailcatcher'
+    ports:
+      - '1080:1080'
+      - '1025:1025'
