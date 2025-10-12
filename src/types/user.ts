@@ -2,6 +2,7 @@ export type TypeUserValues = {
 	username: string;
 	email: string;
 	password: string;
+	features?: string[];
 };
 
 export type TypeUser = {
