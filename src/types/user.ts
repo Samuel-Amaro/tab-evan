@@ -9,6 +9,7 @@ export type TypeUser = {
 	username: string;
 	email: string;
 	password: string;
+	features: string[];
 	created_at: string;
 	updated_at: string;
 };
