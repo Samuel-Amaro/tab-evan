@@ -1,16 +1,19 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import orchestrator from '../../orchestrator';
 import type { TypeUser } from '../../../src/types/user';
+import activation from '../../../src/models/activation';
 
 beforeAll(async () => {
 	await orchestrator.waitForAllServices();
 	await orchestrator.clearDatabase();
 	await orchestrator.runPendingMigrations();
-	await orchestrator.deleteAllEmails();
 });
 
 describe('Use case: Registration Flow (all successful)', () => {
+	let createUserResponseBody: TypeUser;
 	it('Create user account', async () => {
+		await orchestrator.deleteAllEmails();
+
 		const createUserResponse = await fetch('http://localhost:5173/api/v1/users', {
 			method: 'POST',
 			headers: {
@@ -25,7 +28,7 @@ describe('Use case: Registration Flow (all successful)', () => {
 
 		expect(createUserResponse.status).toBe(201);
 
-		const createUserResponseBody: TypeUser = await createUserResponse.json();
+		createUserResponseBody = await createUserResponse.json();
 
 		expect(createUserResponseBody).toEqual({
 			id: createUserResponseBody.id,
@@ -35,12 +38,22 @@ describe('Use case: Registration Flow (all successful)', () => {
 			//uma feature e composta pela ação:objeto:modificador
 			//read: ação de ler, activation_token: objeto alvo
 			features: ['read:activation_token'],
-			createdAt: createUserResponseBody.created_at,
-			updatedAt: createUserResponseBody.updated_at
+			created_at: createUserResponseBody.created_at,
+			updated_at: createUserResponseBody.updated_at
 		});
 	});
 
-	it('Receive activation email', async () => {});
+	it('Receive activation email', async () => {
+		const lastEmail = await orchestrator.getLastEmail();
+
+		const activationToken = await activation.findOneByUserId(createUserResponseBody.id);
+
+		expect(lastEmail?.sender).toBe('<samuel.dev.front@gmail.com>');
+		expect(lastEmail?.recipients[0]).toBe('<registration.flow@curso.dev>');
+		expect(lastEmail?.subject).toBe('Ative seu cadastro no TabEvangelho!');
+		expect(lastEmail?.text).toContain('RegistrationFlow');
+		expect(lastEmail?.text).toContain(activationToken.id);
+	});
 
 	it('Activate account', async () => {});
 

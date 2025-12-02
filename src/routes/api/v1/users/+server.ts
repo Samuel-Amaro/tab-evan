@@ -1,6 +1,7 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 import user from '../../../../models/user';
 import controller from '../../../../../infra/controller';
+import activation from '../../../../models/activation';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
@@ -11,6 +12,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		} = await request.json();
 
 		const newUser = await user.create(useInputValues);
+
+		const activationToken = await activation.create(newUser.id);
+		await activation.sendEmailToUser(newUser, activationToken);
 
 		return json(newUser, {
 			status: 201

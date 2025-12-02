@@ -1,13 +1,13 @@
-import nodedmailer from 'nodemailer';
+import nodemailer from 'nodemailer';
 
-const transporter = nodedmailer.createTransport({
-	host: import.meta.env.EMAIL_SMTP_HOST,
-	port: Number(import.meta.env.EMAIL_SMTP_PORT),
+const transporter = nodemailer.createTransport({
+	host: process.env.EMAIL_SMTP_HOST,
+	port: parseInt(process.env.EMAIL_SMTP_PORT ?? '1025'),
 	auth: {
-		user: import.meta.env.EMAIL_SMTP_USER,
-		pass: import.meta.env.EMAIL_SMTP_PASSWORD
+		user: process.env.EMAIL_SMTP_USER,
+		pass: process.env.EMAIL_SMTP_PASSWORD
 	},
-	secure: import.meta.env.MODE === 'production' ? true : false
+	secure: process.env.MODE === 'production' ? true : false
 });
 
 async function send(mailOptions: {
@@ -17,7 +17,17 @@ async function send(mailOptions: {
 	text: string;
 	html?: string;
 }) {
-	await transporter.sendMail(mailOptions);
+	try {
+		await transporter.sendMail(mailOptions);
+		const error = await transporter.verify();
+		if (error) {
+			console.log('\n🟢 Servidor SMTP está pronto para enviar e-mails');
+		} else {
+			console.error('\n\n🔴 Erro de verificação no servidor SMTP');
+		}
+	} catch (error) {
+		console.error('Erro de conexão no servidor SMTP: ', error);
+	}
 }
 
 const email = {
