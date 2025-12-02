@@ -68,15 +68,23 @@ async function createSession(userId: string) {
 }
 
 async function deleteAllEmails() {
-	await fetch(`${emailHttpUrl}/messages`, {
+	const response = await fetch(`${emailHttpUrl}/messages`, {
 		method: 'DELETE'
 	});
+
+	if (response.status !== 200) {
+		console.error('Houve um erro ao deletar os e-mails: ', response.statusText);
+	}
 }
 
-async function getLastEmail(): Promise<TypeEmailValuesBody> {
+async function getLastEmail(): Promise<TypeEmailValuesBody | null> {
 	const emailListResponse = await fetch(`${emailHttpUrl}/messages`);
 	const emailListBody: TypeEmailValues[] = await emailListResponse.json();
-	const lastEmailItem = emailListBody[emailListBody.length - 1];
+	const lastEmailItem = emailListBody.pop();
+
+	if (!lastEmailItem) {
+		return null;
+	}
 
 	const emailTextResponse = await fetch(`${emailHttpUrl}/messages/${lastEmailItem?.id}.plain`);
 	const emailTextBody = await emailTextResponse.text();
