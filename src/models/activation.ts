@@ -3,8 +3,44 @@ import email from '../../infra/email';
 import type { TypeActivationToken } from '../types/activation';
 import type { TypeUser } from '../types/user';
 import webserver from '../../infra/webserver';
+import { NotFoundError } from '../../infra/errors';
 
 const EXPIRATION_IN_MILLISECONDS = 60 * 15 * 1000; // 15 minutes
+
+async function findOneValidById(tokenId: string) {
+	return await runSelectQuery(tokenId);
+
+	async function runSelectQuery(tokenId: string) {
+		const results = await database.query({
+			text: `
+        SELECT
+          *
+        FROM
+          user_activation_tokens
+        WHERE
+          id = $1
+          AND
+            expires_at > NOW()
+          AND
+            used_at IS NULL
+        LIMIT
+          1
+        ;
+      `,
+			values: [tokenId]
+		});
+
+		if (results.rowCount === 0) {
+			throw new NotFoundError({
+				cause: 'validação de token',
+				message: 'O token de ativação utilizado não foi encontrado no sistema ou expirou.',
+				action: 'Faça um novo cadastro.'
+			});
+		}
+
+		return results.rows[0] as TypeActivationToken;
+	}
+}
 
 async function sendEmailToUser(user: TypeUser, activationToken: TypeActivationToken) {
 	await email.send({
@@ -43,33 +79,10 @@ async function create(userId: string) {
 	}
 }
 
-async function findOneByUserId(userId: string) {
-	return await runSelectQuery(userId);
-
-	async function runSelectQuery(userId: string) {
-		const results = await database.query({
-			text: `
-        SELECT
-          *
-        FROM
-          user_activation_tokens
-        WHERE
-          user_id = $1
-        LIMIT
-          1
-        ;
-      `,
-			values: [userId]
-		});
-
-		return results.rows[0] as TypeActivationToken;
-	}
-}
-
 const activation = {
 	sendEmailToUser,
 	create,
-	findOneByUserId
+	findOneValidById
 };
 
 export default activation;

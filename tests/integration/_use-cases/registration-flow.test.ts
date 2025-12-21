@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import orchestrator from '../../orchestrator';
 import type { TypeUser } from '../../../src/types/user';
 import activation from '../../../src/models/activation';
+import webserver from '../../../infra/webserver';
 
 beforeAll(async () => {
 	await orchestrator.waitForAllServices();
@@ -46,13 +47,21 @@ describe('Use case: Registration Flow (all successful)', () => {
 	it('Receive activation email', async () => {
 		const lastEmail = await orchestrator.getLastEmail();
 
-		const activationToken = await activation.findOneByUserId(createUserResponseBody.id);
-
 		expect(lastEmail?.sender).toBe('<samuel.dev.front@gmail.com>');
 		expect(lastEmail?.recipients[0]).toBe('<registration.flow@curso.dev>');
 		expect(lastEmail?.subject).toBe('Ative seu cadastro no TabEvangelho!');
 		expect(lastEmail?.text).toContain('RegistrationFlow');
-		expect(lastEmail?.text).toContain(activationToken.id);
+
+		const activationTokenId = orchestrator.extractUUID(lastEmail?.text as string);
+
+		expect(lastEmail?.text).toContain(
+			`${webserver.getOrigin()}/cadastro/ativar/${activationTokenId}`
+		);
+
+		const activationTokenObject = await activation.findOneValidById(activationTokenId as string);
+
+		expect(activationTokenObject.user_id).toBe(createUserResponseBody.id);
+		expect(activationTokenObject.user_at).toBe(undefined);
 	});
 
 	it('Activate account', async () => {});

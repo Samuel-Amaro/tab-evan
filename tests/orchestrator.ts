@@ -95,6 +95,11 @@ async function getLastEmail(): Promise<TypeEmailValuesBody | null> {
 	};
 }
 
+function extractUUID(text: string) {
+	const match = text.match(/[0-9a-fA-F-]{36}/);
+	return match ? match[0] : null;
+}
+
 export default {
 	waitForAllServices,
 	clearDatabase,
@@ -102,5 +107,6 @@ export default {
 	createUser,
 	createSession,
 	deleteAllEmails,
-	getLastEmail
+	getLastEmail,
+	extractUUID
 };
