@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import orchestrator from '../../../../../orchestrator';
 import { version as uuidVersion } from 'uuid';
-import type { TypeUser } from '../../../../../../src/types/user';
+import { FEATURES_USER, type TypeUser } from '../../../../../../src/types/user';
 import user from '../../../../../../src/models/user';
 import password from '../../../../../../src/models/password';
 
@@ -120,7 +120,7 @@ describe('PATCH /api/v1/users/[username]', () => {
 				username: 'uniqueUser2',
 				email: createdUser.email,
 				password: responseBody.password,
-				features: ['read:activation_token'],
+				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
 				created_at: responseBody.created_at,
 				updated_at: responseBody.updated_at
 			});
@@ -154,7 +154,7 @@ describe('PATCH /api/v1/users/[username]', () => {
 				username: createdUser.username,
 				email: 'uniqueEmail2@email.com',
 				password: responseBody.password,
-				features: ['read:activation_token'],
+				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
 				created_at: responseBody.created_at,
 				updated_at: responseBody.updated_at
 			});
@@ -190,7 +190,7 @@ describe('PATCH /api/v1/users/[username]', () => {
 				username: createdUser.username,
 				email: createdUser.email,
 				password: responseBody.password,
-				features: ['read:activation_token'],
+				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
 				created_at: responseBody.created_at,
 				updated_at: responseBody.updated_at
 			});

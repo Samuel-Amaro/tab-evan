@@ -1,6 +1,6 @@
 import database from '../../infra/database';
 import { NotFoundError, ValidationError } from '../../infra/errors';
-import type { TypeUser, TypeUserValues } from '../types/user';
+import { FEATURES_USER, type TypeUser, type TypeUserValues } from '../types/user';
 import password from './password';
 
 async function create(values: TypeUserValues) {
@@ -29,7 +29,7 @@ async function create(values: TypeUserValues) {
 	}
 
 	function injectDefaultFeaturesInObject(values: TypeUserValues) {
-		values.features = ['read:activation_token'];
+		values.features = [FEATURES_USER.READ_ACTIVATION_TOKEN];
 	}
 }
 
@@ -230,12 +230,37 @@ async function findOneById(id: string) {
 	}
 }
 
+async function setFeatures(userId: string, features: FEATURES_USER[]) {
+	return await runUpdateQuery(userId, features);
+
+	async function runUpdateQuery(userId: string, features: FEATURES_USER[]) {
+		const results = await database.query({
+			text: `
+        UPDATE
+          users
+        SET
+          features = $2,
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1
+        RETURNING
+          *
+        ;
+    `,
+			values: [userId, features]
+		});
+
+		return results.rows[0] as TypeUser;
+	}
+}
+
 const user = {
 	create,
 	findOneByUsername,
 	update,
 	findOneByEmail,
-	findOneById
+	findOneById,
+	setFeatures
 };
 
 export default user;

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import orchestrator from '../../../../orchestrator';
-import type { TypeUser } from '../../../../../src/types/user';
+import { FEATURES_USER, type TypeUser } from '../../../../../src/types/user';
 import { version as uuidVersion } from 'uuid';
 import user from '../../../../../src/models/user';
 import password from '../../../../../src/models/password';
@@ -35,7 +35,7 @@ describe('POST /api/v1/users', () => {
 				username: 'samuelamaro',
 				email: 'teste@email.com',
 				password: responseBody.password,
-				features: ['read:activation_token'],
+				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
 				created_at: responseBody.created_at,
 				updated_at: responseBody.updated_at
 			});

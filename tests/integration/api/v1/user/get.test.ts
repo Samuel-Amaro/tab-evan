@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import orchestrator from '../../../../orchestrator';
-import type { TypeUser } from '../../../../../src/types/user';
+import { FEATURES_USER, type TypeUser } from '../../../../../src/types/user';
 import { version as uuidVersion } from 'uuid';
 import session from '../../../../../src/models/session';
 import setCookieParser, { splitCookiesString } from 'set-cookie-parser';
@@ -35,7 +35,7 @@ describe('GET /api/v1/user', () => {
 				username: 'UserWithValidSession',
 				email: createdUser.email,
 				password: createdUser.password,
-				features: ['read:activation_token'],
+				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
 				created_at: new Date(createdUser.created_at).toISOString(),
 				updated_at: new Date(createdUser.updated_at).toISOString()
 			});
@@ -205,7 +205,7 @@ describe('GET /api/v1/user', () => {
 				username: createdUser.username,
 				email: createdUser.email,
 				password: createdUser.password,
-				features: ['read:activation_token'],
+				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
 				created_at: new Date(createdUser.created_at).toISOString(),
 				updated_at: new Date(createdUser.updated_at).toISOString()
 			});

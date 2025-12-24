@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import orchestrator from '../../../../../orchestrator';
-import type { TypeUser } from '../../../../../../src/types/user';
+import { FEATURES_USER, type TypeUser } from '../../../../../../src/types/user';
 import { version as uuidVersion } from 'uuid';
 
 beforeAll(async () => {
@@ -27,7 +27,7 @@ describe('GET /api/v1/users/[username]', () => {
 				username: 'MesmoCase',
 				email: createdUser.email,
 				password: responseBody.password,
-				features: ['read:activation_token'],
+				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
 				created_at: responseBody.created_at,
 				updated_at: responseBody.updated_at
 			});
@@ -53,7 +53,7 @@ describe('GET /api/v1/users/[username]', () => {
 				username: 'CaseDiferente',
 				email: createdUser.email,
 				password: responseBody.password,
-				features: ['read:activation_token'],
+				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
 				created_at: responseBody.created_at,
 				updated_at: responseBody.updated_at
 			});

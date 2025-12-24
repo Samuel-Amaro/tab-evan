@@ -1,9 +1,10 @@
 import database from '../../infra/database';
 import email from '../../infra/email';
 import type { TypeActivationToken } from '../types/activation';
-import type { TypeUser } from '../types/user';
+import { FEATURES_USER, type TypeUser } from '../types/user';
 import webserver from '../../infra/webserver';
 import { NotFoundError } from '../../infra/errors';
+import user from './user';
 
 const EXPIRATION_IN_MILLISECONDS = 60 * 15 * 1000; // 15 minutes
 
@@ -79,10 +80,41 @@ async function create(userId: string) {
 	}
 }
 
+async function markTokenAsUsed(activationTokenId: string) {
+	return await runUpdateQuery(activationTokenId);
+
+	async function runUpdateQuery(activationTokenId: string) {
+		const results = await database.query({
+			text: `
+        UPDATE
+          user_activation_tokens
+        SET
+          used_at = timezone('utc', now()),
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1
+        RETURNING
+          *
+        ;
+      `,
+			values: [activationTokenId]
+		});
+
+		return results.rows[0] as TypeActivationToken;
+	}
+}
+
+async function activateUserByUserId(userId: string) {
+	const activateUser = await user.setFeatures(userId, [FEATURES_USER.CREATE_SESSION]);
+	return activateUser;
+}
+
 const activation = {
 	sendEmailToUser,
 	create,
-	findOneValidById
+	findOneValidById,
+	markTokenAsUsed,
+	activateUserByUserId
 };
 
 export default activation;

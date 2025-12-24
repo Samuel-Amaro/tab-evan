@@ -14,3 +14,10 @@ export type TypeUser = {
 	created_at: string;
 	updated_at: string;
 };
+
+export enum FEATURES_USER {
+	//uma feature e composta pela ação:objeto:modificador
+	//EX: read: ação de ler, activation_token: objeto alvo
+	CREATE_SESSION = 'create:session',
+	READ_ACTIVATION_TOKEN = 'read:activation_token'
+}
