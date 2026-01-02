@@ -61,7 +61,7 @@ async function findOneValidByToken(token: string | undefined) {
 			throw new UnauthorizedError({
 				message: 'Usuário não possui sessão ativa.',
 				action: 'Verifique se este usuário está logado e tente novamente.',
-				cause: 'function findOneByValidByToken in model session'
+				cause: 'function findOneValidByToken in model session'
 			});
 		}
 
