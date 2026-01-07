@@ -10,6 +10,7 @@ import {
 import session from '../src/models/session';
 import user from '../src/models/user';
 import { FEATURES_USER, type TypeUser } from '../src/types/user';
+import authorization from '../src/models/authorization';
 
 const controller = {
 	onNoMatchHandler: () => {
@@ -73,7 +74,7 @@ const controller = {
 		return await controller.injectAnonymousUser();
 	},
 	canRequest: (user: TypeUser, featuresUserTryingToRequest: FEATURES_USER): boolean => {
-		if (user.features.includes(featuresUserTryingToRequest)) {
+		if (authorization.can(user, featuresUserTryingToRequest)) {
 			return true;
 		}
 

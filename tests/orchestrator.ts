@@ -6,6 +6,7 @@ import type { TypeUserValues } from '../src/types/user';
 import user from '../src/models/user';
 import session from '../src/models/session';
 import type { TypeEmailValues, TypeEmailValuesBody } from '../src/types/email';
+import activation from '../src/models/activation';
 
 const emailHttpUrl = `http://${import.meta.env.EMAIL_HTTP_HOST}:${import.meta.env.EMAIL_HTTP_PORT}`;
 
@@ -100,6 +101,10 @@ function extractUUID(text: string) {
 	return match ? match[0] : null;
 }
 
+async function activateUser(userId: string) {
+	return await activation.activateUserByUserId(userId);
+}
+
 export default {
 	waitForAllServices,
 	clearDatabase,
@@ -108,5 +113,6 @@ export default {
 	createSession,
 	deleteAllEmails,
 	getLastEmail,
-	extractUUID
+	extractUUID,
+	activateUser
 };

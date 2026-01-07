@@ -2,6 +2,9 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 import controller from '../../../../../infra/controller';
 import authentication from '../../../../models/authentication';
 import session from '../../../../models/session';
+import authorization from '../../../../models/authorization';
+import { FEATURES_USER } from '../../../../types/user';
+import { ForbiddenError } from '../../../../../infra/errors';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
@@ -14,6 +17,14 @@ export const POST: RequestHandler = async ({ request }) => {
 			userInputValues.email,
 			userInputValues.password
 		);
+
+		if (!authorization.can(userAuthenticate, FEATURES_USER.CREATE_SESSION)) {
+			throw new ForbiddenError({
+				message: 'Você não possui permissão para fazer login.',
+				action: 'Contate o suporte caso você acredite que isso seja um erro.',
+				cause: null
+			});
+		}
 
 		const newSession = await session.create(userAuthenticate.id);
 
