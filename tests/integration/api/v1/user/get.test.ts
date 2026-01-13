@@ -12,11 +12,29 @@ beforeAll(async () => {
 });
 
 describe('GET /api/v1/user', () => {
+	describe('Anonymous user', () => {
+		it('Retrieving the endpoint', async () => {
+			const response = await fetch('http://localhost:5173/api/v1/user');
+
+			expect(response.status).toBe(403);
+
+			const responseBody = await response.json();
+
+			expect(responseBody).toEqual({
+				name: 'ForbiddenError',
+				message: 'Usuário não possui permissão para executar esta ação.',
+				action: 'Verifique se o seu usuário possui a feature "read:session"',
+				status_code: 403
+			});
+		});
+	});
 	describe('Default user', () => {
 		it('With valid session', async () => {
 			const createdUser = await orchestrator.createUser({
 				username: 'UserWithValidSession'
 			});
+
+			const activateUser = await orchestrator.activateUser(createdUser.id);
 
 			const sessionObject = await orchestrator.createSession(createdUser.id);
 
@@ -35,9 +53,9 @@ describe('GET /api/v1/user', () => {
 				username: 'UserWithValidSession',
 				email: createdUser.email,
 				password: createdUser.password,
-				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
+				features: [FEATURES_USER.CREATE_SESSION, FEATURES_USER.READ_SESSION],
 				created_at: new Date(createdUser.created_at).toISOString(),
-				updated_at: new Date(createdUser.updated_at).toISOString()
+				updated_at: new Date(activateUser.updated_at).toISOString()
 			});
 
 			expect(uuidVersion(responseBody.id)).toBe(4);
@@ -157,21 +175,6 @@ describe('GET /api/v1/user', () => {
 			});
 		});
 
-		it('With session token not provided', async () => {
-			const response = await fetch('http://localhost:5173/api/v1/user');
-
-			expect(response.status).toBe(404);
-
-			const responseBody = await response.json();
-
-			expect(responseBody).toEqual({
-				message: 'Token de sessão não informado.',
-				action: 'Informe um token de sessão válido e tente novamente.',
-				name: 'NotFoundError',
-				status_code: 404
-			});
-		});
-
 		it('With session close to expires', async () => {
 			//volta o tempo para o passado, para criar uma sessão que já se passou mais da metade do tempo para expirar
 			vi.useFakeTimers({
@@ -179,6 +182,8 @@ describe('GET /api/v1/user', () => {
 			});
 
 			const createdUser = await orchestrator.createUser();
+
+			const activateUser = await orchestrator.activateUser(createdUser.id);
 
 			//cria a sessão que já nasceu perto de expirar
 			//tudo no mesmo processo, então o tempo "viajado" é o mesmo
@@ -205,9 +210,9 @@ describe('GET /api/v1/user', () => {
 				username: createdUser.username,
 				email: createdUser.email,
 				password: createdUser.password,
-				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
+				features: [FEATURES_USER.CREATE_SESSION, FEATURES_USER.READ_SESSION],
 				created_at: new Date(createdUser.created_at).toISOString(),
-				updated_at: new Date(createdUser.updated_at).toISOString()
+				updated_at: new Date(activateUser.updated_at).toISOString()
 			});
 
 			expect(uuidVersion(responseBody.id)).toBe(4);

@@ -20,5 +20,6 @@ export enum FEATURES_USER {
 	//EX: read: ação de ler, activation_token: objeto alvo
 	CREATE_SESSION = 'create:session',
 	READ_ACTIVATION_TOKEN = 'read:activation_token',
-	CREATE_USER = 'create:user'
+	CREATE_USER = 'create:user',
+	READ_SESSION = 'read:session'
 }

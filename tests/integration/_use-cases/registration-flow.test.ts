@@ -16,6 +16,7 @@ beforeAll(async () => {
 describe('Use case: Registration Flow (all successful)', () => {
 	let createUserResponseBody: TypeUser;
 	let activationTokenId: string | null;
+	let createSessionResponseBody: TypeSessions;
 
 	it('Create user account', async () => {
 		await orchestrator.deleteAllEmails();
@@ -84,7 +85,10 @@ describe('Use case: Registration Flow (all successful)', () => {
 		expect(Date.parse(activationResponseBody.used_at)).not.toBeNaN();
 
 		const activatedUser = await user.findOneByUsername('RegistrationFlow');
-		expect(activatedUser.features).toEqual([FEATURES_USER.CREATE_SESSION]);
+		expect(activatedUser.features).toEqual([
+			FEATURES_USER.CREATE_SESSION,
+			FEATURES_USER.READ_SESSION
+		]);
 	});
 
 	it('Login', async () => {
@@ -101,10 +105,22 @@ describe('Use case: Registration Flow (all successful)', () => {
 
 		expect(createSessionResponse.status).toBe(201);
 
-		const createSessionResponseBody: TypeSessions = await createSessionResponse.json();
+		createSessionResponseBody = await createSessionResponse.json();
 
 		expect(createSessionResponseBody.user_id).toBe(createUserResponseBody.id);
 	});
 
-	it('Get user information', async () => {});
+	it('Get user information', async () => {
+		const userResponse = await fetch('http://localhost:5173/api/v1/user', {
+			headers: {
+				Cookie: `session_id=${createSessionResponseBody.token}`
+			}
+		});
+
+		expect(userResponse.status).toBe(200);
+
+		const userResponseBody: TypeUser = await userResponse.json();
+
+		expect(userResponseBody.id).toBe(createUserResponseBody.id);
+	});
 });
