@@ -21,5 +21,6 @@ export enum FEATURES_USER {
 	CREATE_SESSION = 'create:session',
 	READ_ACTIVATION_TOKEN = 'read:activation_token',
 	CREATE_USER = 'create:user',
-	READ_SESSION = 'read:session'
+	READ_SESSION = 'read:session',
+	UPDATE_USER = 'update:user'
 }

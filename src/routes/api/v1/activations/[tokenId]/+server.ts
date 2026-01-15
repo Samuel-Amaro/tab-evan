@@ -7,9 +7,10 @@ export const PATCH: RequestHandler = async ({ params }) => {
 		const tokenId = params.tokenId;
 
 		const validActivationToken = await activation.findOneValidById(tokenId as string);
-		const usedActivationToken = await activation.markTokenAsUsed(tokenId as string);
 
 		await activation.activateUserByUserId(validActivationToken.user_id);
+
+		const usedActivationToken = await activation.markTokenAsUsed(tokenId as string);
 
 		return json(usedActivationToken);
 	} catch (error) {

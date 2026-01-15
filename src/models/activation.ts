@@ -3,8 +3,9 @@ import email from '../../infra/email';
 import type { TypeActivationToken } from '../types/activation';
 import { FEATURES_USER, type TypeUser } from '../types/user';
 import webserver from '../../infra/webserver';
-import { NotFoundError } from '../../infra/errors';
+import { ForbiddenError, NotFoundError } from '../../infra/errors';
 import user from './user';
+import authorization from './authorization';
 
 const EXPIRATION_IN_MILLISECONDS = 60 * 15 * 1000; // 15 minutes
 
@@ -105,6 +106,16 @@ async function markTokenAsUsed(activationTokenId: string) {
 }
 
 async function activateUserByUserId(userId: string) {
+	const userToActivate = await user.findOneById(userId);
+
+	if (!authorization.can(userToActivate, FEATURES_USER.READ_ACTIVATION_TOKEN)) {
+		throw new ForbiddenError({
+			cause: null,
+			message: 'Você não pode mais utilizar tokens de ativação.',
+			action: 'Entre em contato com o suporte.'
+		});
+	}
+
 	const activateUser = await user.setFeatures(userId, [
 		FEATURES_USER.CREATE_SESSION,
 		FEATURES_USER.READ_SESSION
@@ -117,7 +128,8 @@ const activation = {
 	create,
 	findOneValidById,
 	markTokenAsUsed,
-	activateUserByUserId
+	activateUserByUserId,
+	EXPIRATION_IN_MILLISECONDS
 };
 
 export default activation;
