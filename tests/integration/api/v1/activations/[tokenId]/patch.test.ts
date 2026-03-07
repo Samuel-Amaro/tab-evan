@@ -178,7 +178,8 @@ describe('PATCH /api/v1/activations/[tokenId]', () => {
 			const activatedUser = await user.findOneById(responseBody.user_id);
 			expect(activatedUser.features).toEqual([
 				FEATURES_USER.CREATE_SESSION,
-				FEATURES_USER.READ_SESSION
+				FEATURES_USER.READ_SESSION,
+				FEATURES_USER.UPDATE_USER
 			]);
 		});
 

@@ -6,6 +6,9 @@ import { FEATURES_USER } from './types/user';
 //o objetivo e interceptar o fluxo entre duas etapas
 
 export const handle: Handle = async ({ event, resolve }) => {
+	// eslint-disable-next-line no-useless-escape
+	const API_USERS_REGEX = /^\/api\/v1\/users\/[^\/]+$/;
+
 	try {
 		if (event.url.pathname.startsWith('/api/v1/sessions') && event.request.method === 'POST') {
 			const userFound = await controller.injectAnonymousOrUser(event.cookies.get('session_id'));
@@ -55,6 +58,19 @@ export const handle: Handle = async ({ event, resolve }) => {
 			};
 
 			if (controller.canRequest(userFound, FEATURES_USER.CREATE_USER)) {
+				return await resolve(event);
+			}
+		}
+
+		if (RegExp(API_USERS_REGEX).test(event.url.pathname) && event.request.method === 'PATCH') {
+			const userFound = await controller.injectAnonymousOrUser(event.cookies.get('session_id'));
+
+			event.locals = {
+				...event.locals,
+				user: userFound
+			};
+
+			if (controller.canRequest(userFound, FEATURES_USER.UPDATE_USER)) {
 				return await resolve(event);
 			}
 		}

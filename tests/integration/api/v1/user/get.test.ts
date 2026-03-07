@@ -53,7 +53,11 @@ describe('GET /api/v1/user', () => {
 				username: 'UserWithValidSession',
 				email: createdUser.email,
 				password: createdUser.password,
-				features: [FEATURES_USER.CREATE_SESSION, FEATURES_USER.READ_SESSION],
+				features: [
+					FEATURES_USER.CREATE_SESSION,
+					FEATURES_USER.READ_SESSION,
+					FEATURES_USER.UPDATE_USER
+				],
 				created_at: new Date(createdUser.created_at).toISOString(),
 				updated_at: new Date(activateUser.updated_at).toISOString()
 			});
@@ -210,7 +214,11 @@ describe('GET /api/v1/user', () => {
 				username: createdUser.username,
 				email: createdUser.email,
 				password: createdUser.password,
-				features: [FEATURES_USER.CREATE_SESSION, FEATURES_USER.READ_SESSION],
+				features: [
+					FEATURES_USER.CREATE_SESSION,
+					FEATURES_USER.READ_SESSION,
+					FEATURES_USER.UPDATE_USER
+				],
 				created_at: new Date(createdUser.created_at).toISOString(),
 				updated_at: new Date(activateUser.updated_at).toISOString()
 			});
