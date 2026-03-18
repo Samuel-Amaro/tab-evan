@@ -1,7 +1,19 @@
-import type { FEATURES_USER, TypeUser } from '../types/user';
+import { FEATURES_USER, type TypeUser } from '../types/user';
 
-function can(user: TypeUser, featuresUserTryingToRequest: FEATURES_USER) {
-	return user.features.includes(featuresUserTryingToRequest);
+function can(user: TypeUser, featuresUserTryingToRequest: FEATURES_USER, resource?: TypeUser) {
+	let authorized = false;
+
+	if (user.features.includes(featuresUserTryingToRequest)) authorized = true;
+
+	if (featuresUserTryingToRequest === FEATURES_USER.UPDATE_USER && resource) {
+		authorized = false;
+
+		if (user.id === resource.id || can(user, FEATURES_USER.UPDATE_USER_OTHERS)) {
+			authorized = true;
+		}
+	}
+
+	return authorized;
 }
 
 const authorization = {

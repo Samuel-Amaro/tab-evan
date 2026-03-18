@@ -254,13 +254,38 @@ async function setFeatures(userId: string, features: FEATURES_USER[]) {
 	}
 }
 
+async function addFeatures(userId: string, features: FEATURES_USER[]) {
+	return await runUpdateQuery(userId, features);
+
+	async function runUpdateQuery(userId: string, features: FEATURES_USER[]) {
+		const results = await database.query({
+			text: `
+        UPDATE
+          users
+        SET
+          features = array_cat(features, $2),
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1
+        RETURNING
+          *
+        ;
+    `,
+			values: [userId, features]
+		});
+
+		return results.rows[0] as TypeUser;
+	}
+}
+
 const user = {
 	create,
 	findOneByUsername,
 	update,
 	findOneByEmail,
 	findOneById,
-	setFeatures
+	setFeatures,
+	addFeatures
 };
 
 export default user;

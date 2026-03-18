@@ -18,9 +18,13 @@ export type TypeUser = {
 export enum FEATURES_USER {
 	//uma feature e composta pela ação:objeto:modificador
 	//EX: read: ação de ler, activation_token: objeto alvo
+	//ação: oque o usuário esta tentando fazer
+	//objeto: objeto alvo(recurso) da ação
+	//modificador: que pode apimentar a relação entre a ação e o objeto, como por exemplo, um usuário só pode atualizar outro usuário se for um admin, ou um usuário pode atualizar apenas ele mesmo.
 	CREATE_SESSION = 'create:session',
 	READ_ACTIVATION_TOKEN = 'read:activation_token',
 	CREATE_USER = 'create:user',
 	READ_SESSION = 'read:session',
-	UPDATE_USER = 'update:user'
+	UPDATE_USER = 'update:user',
+	UPDATE_USER_OTHERS = 'update:user:others'
 }
