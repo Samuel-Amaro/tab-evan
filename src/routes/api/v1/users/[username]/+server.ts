@@ -5,13 +5,17 @@ import { FEATURES_USER, type TypeUserValues } from '../../../../../types/user';
 import authorization from '../../../../../models/authorization';
 import { ForbiddenError } from '../../../../../../infra/errors';
 
-export const GET: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({ params, locals }) => {
 	try {
 		const username = params.username;
-
 		const userFound = await user.findOneByUsername(username as string);
 
-		return json(userFound);
+		const securedOutputValues = authorization.filterOutput(locals.user, {
+			feature: FEATURES_USER.READ_USER,
+			resource: userFound
+		});
+
+		return json(securedOutputValues);
 	} catch (error) {
 		return controller.onErrorHandler(error);
 	}
@@ -37,7 +41,12 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 		const updatedUser = await user.update(username as string, userInputValues);
 
-		return json(updatedUser);
+		const securedOutputValues = authorization.filterOutput(userTryingToPatch, {
+			feature: FEATURES_USER.READ_USER,
+			resource: updatedUser
+		});
+
+		return json(securedOutputValues);
 	} catch (error) {
 		return controller.onErrorHandler(error);
 	}

@@ -8,3 +8,24 @@ export type Status = {
 		};
 	};
 };
+
+export type OutputStatus =
+	| {
+			updated_at: string;
+			dependencies: {
+				database: {
+					max_connections: number;
+					opened_connections: number;
+				};
+			};
+	  }
+	| {
+			updated_at: string;
+			dependencies: {
+				database: {
+					max_connections: number;
+					opened_connections: number;
+					version: string;
+				};
+			};
+	  };

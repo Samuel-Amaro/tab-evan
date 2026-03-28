@@ -2,8 +2,10 @@ import { env } from '$env/dynamic/private';
 import controller from '../../../../../infra/controller';
 import database from '../../../../../infra/database';
 import { json, type RequestHandler } from '@sveltejs/kit';
+import authorization from '../../../../models/authorization';
+import { FEATURES_USER } from '../../../../types/user';
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ locals }) => {
 	try {
 		const updatedAt = new Date().toISOString();
 
@@ -20,7 +22,7 @@ export const GET: RequestHandler = async () => {
 		});
 		const databaseOpenedConnectionsValue = databaseOpenedConnectionsResult.rows[0].count;
 
-		return json({
+		const statusObject = {
 			updated_at: updatedAt,
 			dependencies: {
 				database: {
@@ -29,7 +31,14 @@ export const GET: RequestHandler = async () => {
 					opened_connections: databaseOpenedConnectionsValue
 				}
 			}
+		};
+
+		const secureOutputValues = authorization.filterOutput(locals.user, {
+			feature: FEATURES_USER.READ_STATUS,
+			resource: statusObject
 		});
+
+		return json(secureOutputValues);
 	} catch (error) {
 		return controller.onErrorHandler(error);
 	}

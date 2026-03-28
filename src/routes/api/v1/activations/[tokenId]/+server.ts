@@ -1,8 +1,10 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 import controller from '../../../../../../infra/controller';
 import activation from '../../../../../models/activation';
+import authorization from '../../../../../models/authorization';
+import { FEATURES_USER } from '../../../../../types/user';
 
-export const PATCH: RequestHandler = async ({ params }) => {
+export const PATCH: RequestHandler = async ({ params, locals }) => {
 	try {
 		const tokenId = params.tokenId;
 
@@ -12,7 +14,12 @@ export const PATCH: RequestHandler = async ({ params }) => {
 
 		const usedActivationToken = await activation.markTokenAsUsed(tokenId as string);
 
-		return json(usedActivationToken);
+		const securedOutputValues = authorization.filterOutput(locals.user, {
+			feature: FEATURES_USER.READ_ACTIVATION_TOKEN,
+			resource: usedActivationToken
+		});
+
+		return json(securedOutputValues);
 	} catch (error) {
 		return controller.onErrorHandler(error);
 	}

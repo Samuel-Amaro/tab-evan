@@ -28,7 +28,12 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const newSession = await session.create(userAuthenticate.id);
 
-		return json(newSession, {
+		const securedOutputValues = authorization.filterOutput(userAuthenticate, {
+			feature: FEATURES_USER.READ_SESSION,
+			resource: newSession
+		});
+
+		return json(securedOutputValues, {
 			status: 201,
 			headers: {
 				'Set-Cookie': `session_id=${newSession.token}; Path=/; Max-Age=${session.EXPIRATION_IN_MILLISECONDS / 1000};${import.meta.env.MODE === 'production' ? ' Secure=true;' : ''} HttpOnly=true;`
@@ -39,14 +44,19 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 };
 
-export const DELETE: RequestHandler = async ({ cookies }) => {
+export const DELETE: RequestHandler = async ({ cookies, locals }) => {
 	try {
 		const sessionToken = cookies.get('session_id');
 
 		const existingSession = await session.findOneValidByToken(sessionToken);
 		const expiredSession = await session.expireById(existingSession.id);
 
-		return json(expiredSession, {
+		const securedOutputValues = authorization.filterOutput(locals.user, {
+			feature: FEATURES_USER.READ_SESSION,
+			resource: expiredSession
+		});
+
+		return json(securedOutputValues, {
 			status: 200,
 			headers: {
 				'Set-Cookie': `session_id=invalid; Path=/; Max-Age=-1;${import.meta.env.MODE === 'production' ? ' Secure=true;' : ''} HttpOnly=true;`

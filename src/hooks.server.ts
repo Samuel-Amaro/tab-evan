@@ -10,7 +10,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const API_USERS_REGEX = /^\/api\/v1\/users\/[^\/]+$/;
 
 	try {
-		if (event.url.pathname.startsWith('/api/v1/sessions') && event.request.method === 'POST') {
+		if (event.url.pathname === '/api/v1/sessions' && event.request.method === 'POST') {
 			const userFound = await controller.injectAnonymousOrUser(event.cookies.get('session_id'));
 
 			event.locals = {
@@ -23,7 +23,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			}
 		}
 
-		if (event.url.pathname.startsWith('/api/v1/user') && event.request.method === 'GET') {
+		if (event.url.pathname === '/api/v1/users' && event.request.method === 'GET') {
 			const userFound = await controller.injectAnonymousOrUser(event.cookies.get('session_id'));
 
 			event.locals = {
@@ -49,7 +49,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			}
 		}
 
-		if (event.url.pathname.startsWith('/api/v1/users') && event.request.method === 'POST') {
+		if (event.url.pathname === '/api/v1/users' && event.request.method === 'POST') {
 			const userFound = await controller.injectAnonymousOrUser(event.cookies.get('session_id'));
 
 			event.locals = {
@@ -73,6 +73,67 @@ export const handle: Handle = async ({ event, resolve }) => {
 			if (controller.canRequest(userFound, FEATURES_USER.UPDATE_USER)) {
 				return await resolve(event);
 			}
+		}
+
+		if (event.url.pathname === '/api/v1/user' && event.request.method === 'GET') {
+			const userFound = await controller.injectAnonymousOrUser(event.cookies.get('session_id'));
+
+			event.locals = {
+				...event.locals,
+				user: userFound
+			};
+
+			if (controller.canRequest(userFound, FEATURES_USER.READ_SESSION)) {
+				return await resolve(event);
+			}
+		}
+
+		if (event.url.pathname === '/api/v1/sessions' && event.request.method === 'DELETE') {
+			const userFound = await controller.injectAnonymousOrUser(event.cookies.get('session_id'));
+
+			event.locals = {
+				...event.locals,
+				user: userFound
+			};
+
+			return await resolve(event);
+		}
+
+		if (event.url.pathname === '/api/v1/migrations' && event.request.method === 'GET') {
+			const userFound = await controller.injectAnonymousOrUser(event.cookies.get('session_id'));
+
+			event.locals = {
+				...event.locals,
+				user: userFound
+			};
+
+			if (controller.canRequest(userFound, FEATURES_USER.READ_MIGRATION)) {
+				return await resolve(event);
+			}
+		}
+
+		if (event.url.pathname === '/api/v1/migrations' && event.request.method === 'POST') {
+			const userFound = await controller.injectAnonymousOrUser(event.cookies.get('session_id'));
+
+			event.locals = {
+				...event.locals,
+				user: userFound
+			};
+
+			if (controller.canRequest(userFound, FEATURES_USER.CREATE_MIGRATION)) {
+				return await resolve(event);
+			}
+		}
+
+		if (event.url.pathname === '/api/v1/status' && event.request.method === 'GET') {
+			const userFound = await controller.injectAnonymousOrUser(event.cookies.get('session_id'));
+
+			event.locals = {
+				...event.locals,
+				user: userFound
+			};
+
+			return await resolve(event);
 		}
 
 		return await resolve(event);
