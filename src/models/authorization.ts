@@ -1,8 +1,36 @@
 import type { FilterInputType } from '../types';
 import { FEATURES_USER, type TypeUser } from '../types/user';
 import type { OutputStatus } from '../types/status';
+import { InternalServerError } from '../../infra/errors';
+
+const availableFeatures = [
+	//USER
+	FEATURES_USER.CREATE_USER,
+	FEATURES_USER.READ_USER,
+	FEATURES_USER.READ_USER_SELF,
+	FEATURES_USER.UPDATE_USER,
+	FEATURES_USER.UPDATE_USER_OTHERS,
+
+	//SESSION
+	FEATURES_USER.CREATE_SESSION,
+	FEATURES_USER.READ_SESSION,
+
+	//ACTIVATION_TOKEN
+	FEATURES_USER.READ_ACTIVATION_TOKEN,
+
+	//MIGRATION
+	FEATURES_USER.READ_MIGRATION,
+	FEATURES_USER.CREATE_MIGRATION,
+
+	//STATUS
+	FEATURES_USER.READ_STATUS,
+	FEATURES_USER.READ_STATUS_ALL
+];
 
 function can(user: TypeUser, featuresUserTryingToRequest: FEATURES_USER, resource?: TypeUser) {
+	validateUser(user);
+	validateFeature(featuresUserTryingToRequest);
+
 	let authorized = false;
 
 	if (user.features.includes(featuresUserTryingToRequest)) authorized = true;
@@ -19,6 +47,9 @@ function can(user: TypeUser, featuresUserTryingToRequest: FEATURES_USER, resourc
 }
 
 function filterOutput(user: TypeUser, input: FilterInputType) {
+	validateUser(user);
+	validateInput(input);
+
 	const { feature, resource } = input;
 	if (feature === FEATURES_USER.READ_USER) {
 		return {
@@ -100,6 +131,30 @@ function filterOutput(user: TypeUser, input: FilterInputType) {
 		}
 
 		return output;
+	}
+}
+
+function validateUser(user?: TypeUser) {
+	if (!user || !user.features) {
+		throw new InternalServerError({
+			cause: 'È necessário fornecer `user` no model `authorization`.'
+		});
+	}
+}
+
+function validateFeature(feature?: FEATURES_USER) {
+	if (!feature || !availableFeatures.includes(feature)) {
+		throw new InternalServerError({
+			cause: 'È necessário fornecer uma `feature` no model `authorization`.'
+		});
+	}
+}
+
+function validateInput(input?: FilterInputType) {
+	if (!input || !input?.feature || !input?.resource) {
+		throw new InternalServerError({
+			cause: 'È necessário fornecer `input` object no model `authorization`.'
+		});
 	}
 }
 
