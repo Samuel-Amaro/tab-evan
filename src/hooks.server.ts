@@ -75,6 +75,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 			}
 		}
 
+		if (RegExp(API_USERS_REGEX).test(event.url.pathname) && event.request.method === 'GET') {
+			const userFound = await controller.injectAnonymousOrUser(event.cookies.get('session_id'));
+
+			event.locals = {
+				...event.locals,
+				user: userFound
+			};
+		}
+
 		if (event.url.pathname === '/api/v1/user' && event.request.method === 'GET') {
 			const userFound = await controller.injectAnonymousOrUser(event.cookies.get('session_id'));
 

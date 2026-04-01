@@ -27,7 +27,6 @@ describe('GET /api/v1/status', () => {
 		it('With `read:status:all`', async () => {
 			const privilegedUser = await orchestrator.createUser();
 			const activedPrivilegedUser = await orchestrator.activateUser(privilegedUser.id);
-			await orchestrator.activateUser(privilegedUser.id);
 			await orchestrator.addFeaturesToUser(privilegedUser, [FEATURES_USER.READ_STATUS_ALL]);
 			const privilegedUserSession = await orchestrator.createSession(activedPrivilegedUser.id);
 
@@ -46,7 +45,7 @@ describe('GET /api/v1/status', () => {
 
 			expect(responseBody.dependencies.database.max_connections).toEqual(100);
 			expect(responseBody.dependencies.database.opened_connections).toEqual(1);
-			expect(typeof responseBody.dependencies.database.version).toEqual('16.0');
+			expect(responseBody.dependencies.database.version).toEqual('16.0');
 		});
 	});
 });
