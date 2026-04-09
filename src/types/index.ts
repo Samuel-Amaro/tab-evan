@@ -9,6 +9,7 @@ export interface ErrorInterface {
 	message?: string;
 	statusCode?: number;
 	action?: string;
+	context?: unknown;
 }
 
 export type FilterInputType =
