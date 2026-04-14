@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import orchestrator from '../../../../orchestrator';
+import { FEATURES_USER } from '../../../../../src/types/user';
 
 beforeAll(async () => {
 	await orchestrator.waitForAllServices();
@@ -16,9 +17,35 @@ describe('GET /api/v1/status', () => {
 			const parsedUpdatedAt = new Date(responseBody.updated_at).toISOString();
 			expect(responseBody.updated_at).toEqual(parsedUpdatedAt);
 
-			expect(responseBody.dependencies.database.version).toEqual('16.0');
 			expect(responseBody.dependencies.database.max_connections).toEqual(100);
 			expect(responseBody.dependencies.database.opened_connections).toEqual(1);
+			expect(responseBody.dependencies.database).not.toHaveProperty('version');
+		});
+	});
+
+	describe('Privileged user', () => {
+		it('With `read:status:all`', async () => {
+			const privilegedUser = await orchestrator.createUser();
+			const activedPrivilegedUser = await orchestrator.activateUser(privilegedUser.id);
+			await orchestrator.addFeaturesToUser(privilegedUser, [FEATURES_USER.READ_STATUS_ALL]);
+			const privilegedUserSession = await orchestrator.createSession(activedPrivilegedUser.id);
+
+			const response = await fetch('http://localhost:5173/api/v1/status', {
+				headers: {
+					Cookie: `session_id=${privilegedUserSession.token}`
+				}
+			});
+
+			expect(response.status).toBe(200);
+
+			const responseBody = await response.json();
+
+			const parsedUpdatedAt = new Date(responseBody.updated_at).toISOString();
+			expect(responseBody.updated_at).toEqual(parsedUpdatedAt);
+
+			expect(responseBody.dependencies.database.max_connections).toEqual(100);
+			expect(responseBody.dependencies.database.opened_connections).toEqual(1);
+			expect(responseBody.dependencies.database.version).toEqual('16.0');
 		});
 	});
 });

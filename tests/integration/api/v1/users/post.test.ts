@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import orchestrator from '../../../../orchestrator';
-import type { TypeUser } from '../../../../../src/types/user';
+import { FEATURES_USER, type TypeUser } from '../../../../../src/types/user';
 import { version as uuidVersion } from 'uuid';
 import user from '../../../../../src/models/user';
 import password from '../../../../../src/models/password';
@@ -33,8 +33,7 @@ describe('POST /api/v1/users', () => {
 			expect(responseBody).toEqual({
 				id: responseBody.id,
 				username: 'samuelamaro',
-				email: 'teste@email.com',
-				password: responseBody.password,
+				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
 				created_at: responseBody.created_at,
 				updated_at: responseBody.updated_at
 			});
@@ -126,6 +125,38 @@ describe('POST /api/v1/users', () => {
 				message: 'O username informado já está sendo utilizado.',
 				action: 'Utilize outro username para realizar está operação.',
 				status_code: 400
+			});
+		});
+	});
+
+	describe('Default user', () => {
+		it('With unique and valid data', async () => {
+			const user1 = await orchestrator.createUser();
+			await orchestrator.activateUser(user1.id);
+			const user1SessionObject = await orchestrator.createSession(user1.id);
+
+			const user2Response = await fetch('http://localhost:5173/api/v1/users', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Cookie: `session_id=${user1SessionObject.token}`
+				},
+				body: JSON.stringify({
+					username: 'newuserbydefault',
+					email: 'newuserbydefault@email.com',
+					password: 'senha123'
+				})
+			});
+
+			expect(user2Response.status).toBe(403);
+
+			const user2ResponseBody = await user2Response.json();
+
+			expect(user2ResponseBody).toEqual({
+				name: 'ForbiddenError',
+				message: 'Usuário não possui permissão para executar esta ação.',
+				action: 'Verifique se o seu usuário possui a feature "create:user"',
+				status_code: 403
 			});
 		});
 	});

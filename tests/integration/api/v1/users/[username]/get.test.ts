@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import orchestrator from '../../../../../orchestrator';
-import type { TypeUser } from '../../../../../../src/types/user';
+import { FEATURES_USER, type TypeUser } from '../../../../../../src/types/user';
 import { version as uuidVersion } from 'uuid';
 
 beforeAll(async () => {
@@ -12,7 +12,7 @@ beforeAll(async () => {
 describe('GET /api/v1/users/[username]', () => {
 	describe('Anonymous user', () => {
 		it('With exact case match', async () => {
-			const createdUser = await orchestrator.createUser({
+			await orchestrator.createUser({
 				username: 'MesmoCase'
 			});
 
@@ -25,8 +25,7 @@ describe('GET /api/v1/users/[username]', () => {
 			expect(responseBody).toEqual({
 				id: responseBody.id,
 				username: 'MesmoCase',
-				email: createdUser.email,
-				password: responseBody.password,
+				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
 				created_at: responseBody.created_at,
 				updated_at: responseBody.updated_at
 			});
@@ -37,7 +36,7 @@ describe('GET /api/v1/users/[username]', () => {
 		});
 
 		it('With case mismatch', async () => {
-			const createdUser = await orchestrator.createUser({
+			await orchestrator.createUser({
 				username: 'CaseDiferente'
 			});
 
@@ -50,8 +49,7 @@ describe('GET /api/v1/users/[username]', () => {
 			expect(responseBody).toEqual({
 				id: responseBody.id,
 				username: 'CaseDiferente',
-				email: createdUser.email,
-				password: responseBody.password,
+				features: [FEATURES_USER.READ_ACTIVATION_TOKEN],
 				created_at: responseBody.created_at,
 				updated_at: responseBody.updated_at
 			});

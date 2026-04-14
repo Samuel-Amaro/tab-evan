@@ -1,12 +1,13 @@
 import database from '../../infra/database';
 import { NotFoundError, ValidationError } from '../../infra/errors';
-import type { TypeUser, TypeUserValues } from '../types/user';
+import { FEATURES_USER, type TypeUser, type TypeUserValues } from '../types/user';
 import password from './password';
 
 async function create(values: TypeUserValues) {
 	await validateUniqueUsername(values.username);
 	await validateUniqueEmail(values.email);
 	await hashPasswordInObject(values);
+	injectDefaultFeaturesInObject(values);
 
 	const newUser = await runInsertQuery(values);
 	return newUser;
@@ -15,16 +16,20 @@ async function create(values: TypeUserValues) {
 		const results = await database.query({
 			text: `
       INSERT INTO
-        users (username, email, password)
+        users (username, email, password, features)
       VALUES
-        ($1, $2, $3)
+        ($1, $2, $3, $4)
       RETURNING
         * 
       ;`,
-			values: [values.username, values.email, values.password]
+			values: [values.username, values.email, values.password, values.features]
 		});
 
 		return results.rows[0] as TypeUser;
+	}
+
+	function injectDefaultFeaturesInObject(values: TypeUserValues) {
+		values.features = [FEATURES_USER.READ_ACTIVATION_TOKEN];
 	}
 }
 
@@ -225,12 +230,62 @@ async function findOneById(id: string) {
 	}
 }
 
+async function setFeatures(userId: string, features: FEATURES_USER[]) {
+	return await runUpdateQuery(userId, features);
+
+	async function runUpdateQuery(userId: string, features: FEATURES_USER[]) {
+		const results = await database.query({
+			text: `
+        UPDATE
+          users
+        SET
+          features = $2,
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1
+        RETURNING
+          *
+        ;
+    `,
+			values: [userId, features]
+		});
+
+		return results.rows[0] as TypeUser;
+	}
+}
+
+async function addFeatures(userId: string, features: FEATURES_USER[]) {
+	return await runUpdateQuery(userId, features);
+
+	async function runUpdateQuery(userId: string, features: FEATURES_USER[]) {
+		const results = await database.query({
+			text: `
+        UPDATE
+          users
+        SET
+          features = array_cat(features, $2),
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1
+        RETURNING
+          *
+        ;
+    `,
+			values: [userId, features]
+		});
+
+		return results.rows[0] as TypeUser;
+	}
+}
+
 const user = {
 	create,
 	findOneByUsername,
 	update,
 	findOneByEmail,
-	findOneById
+	findOneById,
+	setFeatures,
+	addFeatures
 };
 
 export default user;
