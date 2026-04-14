@@ -12,21 +12,21 @@ describe('infra/email.ts', () => {
 
 		await email.send({
 			from: 'Samuel Amaro <samuelamaro2018@hotmail.com>',
-			to: 'contato@tabevangelho.com',
+			to: 'contato@tabevangelho.com.br',
 			subject: 'Teste de assunto',
 			text: 'Teste de corpo do email.'
 		});
 
 		await email.send({
 			from: 'Samuel Amaro <samuelamaro2018@hotmail.com>',
-			to: 'contato@tabevangelho.com',
+			to: 'contato@tabevangelho.com.br',
 			subject: 'Último email enviado',
 			text: 'Corpo do último email.'
 		});
 
 		const lastEmail = await orchestrator.getLastEmail();
 		expect(lastEmail?.sender).toBe('<samuelamaro2018@hotmail.com>');
-		expect(lastEmail?.recipients[0]).toBe('<contato@tabevangelho.com>');
+		expect(lastEmail?.recipients[0]).toBe('<contato@tabevangelho.com.br>');
 		expect(lastEmail?.subject).toBe('Último email enviado');
 		expect(lastEmail?.text).toBe('Corpo do último email.\r\n');
 	});

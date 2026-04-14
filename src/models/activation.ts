@@ -46,7 +46,7 @@ async function findOneValidById(tokenId: string) {
 
 async function sendEmailToUser(user: TypeUser, activationToken: TypeActivationToken) {
 	await email.send({
-		from: 'TabEvangelho <contato@tabevangelho.com>',
+		from: 'TabEvangelho <contato@tabevangelho.com.br>',
 		to: user.email,
 		subject: 'Ative seu cadastro no TabEvangelho!',
 		text: `${user.username}, clique no link abaixo para ativar seu cadastro no TabEvangelho:
