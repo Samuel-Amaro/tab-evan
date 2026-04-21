@@ -7,7 +7,8 @@ function getOrigin() {
 		return `https://${process.env.VERCEL_URL}`;
 	}
 
-	return 'https://tab-evan.vercel.app';
+	//https://tab-evan.vercel.app, dominio vercel
+	return 'https://tabevangelho.com.br';
 }
 
 const webserver = {

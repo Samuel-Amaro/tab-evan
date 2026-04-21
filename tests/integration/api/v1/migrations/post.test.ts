@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import orchestrator from '../../../../orchestrator';
 import { FEATURES_USER } from '../../../../../src/types/user';
+import webserver from '../../../../../infra/webserver';
 
 beforeAll(async () => {
 	await orchestrator.waitForAllServices();
@@ -10,8 +11,8 @@ beforeAll(async () => {
 
 describe('POST /api/v1/migrations', () => {
 	describe('Anonymous user', () => {
-		it('Retrieving pending migrations', async () => {
-			const response1 = await fetch('http://localhost:5173/api/v1/migrations', {
+		it('Running pending migrations', async () => {
+			const response1 = await fetch(`${webserver.getOrigin()}/api/v1/migrations`, {
 				method: 'POST'
 			});
 			expect(response1.status).toBe(403);
@@ -33,7 +34,7 @@ describe('POST /api/v1/migrations', () => {
 			await orchestrator.addFeaturesToUser(createdUser, [FEATURES_USER.CREATE_MIGRATION]);
 			const sessionObject = await orchestrator.createSession(activateUser.id);
 
-			const response = await fetch('http://localhost:5173/api/v1/migrations', {
+			const response = await fetch(`${webserver.getOrigin()}/api/v1/migrations`, {
 				method: 'POST',
 				headers: {
 					Cookie: `session_id=${sessionObject.token}`
@@ -48,12 +49,12 @@ describe('POST /api/v1/migrations', () => {
 	});
 
 	describe('Default user', () => {
-		it('Retrieving pending migrations', async () => {
+		it('Running pending migrations', async () => {
 			const createdUser = await orchestrator.createUser();
 			const activateUser = await orchestrator.activateUser(createdUser.id);
 			const sessionObject = await orchestrator.createSession(activateUser.id);
 
-			const response = await fetch('http://localhost:5173/api/v1/migrations', {
+			const response = await fetch(`${webserver.getOrigin()}/api/v1/migrations`, {
 				method: 'POST',
 				headers: {
 					Cookie: `session_id=${sessionObject.token}`

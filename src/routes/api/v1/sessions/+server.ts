@@ -13,7 +13,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			password: string;
 		} = await request.json();
 
-		const userAuthenticate = await authentication.getAuthenticateUser(
+		const userAuthenticate = await authentication.getUser(
 			userInputValues.email,
 			userInputValues.password
 		);
@@ -36,7 +36,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json(securedOutputValues, {
 			status: 201,
 			headers: {
-				'Set-Cookie': `session_id=${newSession.token}; Path=/; Max-Age=${session.EXPIRATION_IN_MILLISECONDS / 1000};${import.meta.env.MODE === 'production' ? ' Secure=true;' : ''} HttpOnly=true;`
+				'Set-Cookie': `session_id=${newSession.token}; Path=/; Max-Age=${session.EXPIRATION_IN_MILLISECONDS / 1000};${import.meta.env.MODE === 'production' ? ' Secure=true;' : ''} HttpOnly=true; SameSite=lax;`
 			}
 		});
 	} catch (error) {

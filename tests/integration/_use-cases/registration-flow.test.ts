@@ -21,7 +21,7 @@ describe('Use case: Registration Flow (all successful)', () => {
 	it('Create user account', async () => {
 		await orchestrator.deleteAllEmails();
 
-		const createUserResponse = await fetch('http://localhost:5173/api/v1/users', {
+		const createUserResponse = await fetch(`${webserver.getOrigin()}/api/v1/users`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -70,7 +70,7 @@ describe('Use case: Registration Flow (all successful)', () => {
 
 	it('Activate account', async () => {
 		const activationResponse = await fetch(
-			`http://localhost:5173/api/v1/activations/${activationTokenId}`,
+			`${webserver.getOrigin()}/api/v1/activations/${activationTokenId}`,
 			{
 				method: 'PATCH'
 			}
@@ -91,7 +91,7 @@ describe('Use case: Registration Flow (all successful)', () => {
 	});
 
 	it('Login', async () => {
-		const createSessionResponse = await fetch('http://localhost:5173/api/v1/sessions', {
+		const createSessionResponse = await fetch(`${webserver.getOrigin()}/api/v1/sessions`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -110,7 +110,7 @@ describe('Use case: Registration Flow (all successful)', () => {
 	});
 
 	it('Get user information', async () => {
-		const userResponse = await fetch('http://localhost:5173/api/v1/user', {
+		const userResponse = await fetch(`${webserver.getOrigin()}/api/v1/user`, {
 			headers: {
 				Cookie: `session_id=${createSessionResponseBody.token}`
 			}

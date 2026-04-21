@@ -4,6 +4,7 @@ import { FEATURES_USER, type TypeUser } from '../../../../../src/types/user';
 import { version as uuidVersion } from 'uuid';
 import session from '../../../../../src/models/session';
 import setCookieParser, { splitCookiesString } from 'set-cookie-parser';
+import webserver from '../../../../../infra/webserver';
 
 beforeAll(async () => {
 	await orchestrator.waitForAllServices();
@@ -14,7 +15,7 @@ beforeAll(async () => {
 describe('GET /api/v1/user', () => {
 	describe('Anonymous user', () => {
 		it('Retrieving the endpoint', async () => {
-			const response = await fetch('http://localhost:5173/api/v1/user');
+			const response = await fetch(`${webserver.getOrigin()}/api/v1/user`);
 
 			expect(response.status).toBe(403);
 
@@ -38,7 +39,7 @@ describe('GET /api/v1/user', () => {
 
 			const sessionObject = await orchestrator.createSession(createdUser.id);
 
-			const response = await fetch('http://localhost:5173/api/v1/user', {
+			const response = await fetch(`${webserver.getOrigin()}/api/v1/user`, {
 				headers: {
 					Cookie: `session_id=${sessionObject.token}`
 				}
@@ -87,7 +88,8 @@ describe('GET /api/v1/user', () => {
 				value: renewedSessionObject.token,
 				maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
 				path: '/',
-				httpOnly: true
+				httpOnly: true,
+				sameSite: 'lax'
 			});
 		});
 
@@ -95,7 +97,7 @@ describe('GET /api/v1/user', () => {
 			const nonexistentToken =
 				'cbc86acc81b715cf3eabef43d67bd25bca6f1b0f892b1e52c4615e4ed29b8e953b806a310bf336d145351fab1d916a50';
 
-			const response = await fetch('http://localhost:5173/api/v1/user', {
+			const response = await fetch(`${webserver.getOrigin()}/api/v1/user`, {
 				headers: {
 					Cookie: `session_id=${nonexistentToken}`
 				}
@@ -145,7 +147,7 @@ describe('GET /api/v1/user', () => {
 			//volta o tempo para o atual
 			vi.useRealTimers();
 
-			const response = await fetch('http://localhost:5173/api/v1/user', {
+			const response = await fetch(`${webserver.getOrigin()}/api/v1/user`, {
 				headers: {
 					Cookie: `session_id=${sessionObject.token}`
 				}
@@ -195,7 +197,7 @@ describe('GET /api/v1/user', () => {
 			//volta o tempo para o atual
 			vi.useRealTimers();
 
-			const response = await fetch('http://localhost:5173/api/v1/user', {
+			const response = await fetch(`${webserver.getOrigin()}/api/v1/user`, {
 				headers: {
 					Cookie: `session_id=${sessionObject.token}`
 				}
@@ -247,7 +249,8 @@ describe('GET /api/v1/user', () => {
 				value: renewedSessionObject.token,
 				maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
 				path: '/',
-				httpOnly: true
+				httpOnly: true,
+				sameSite: 'lax'
 			});
 		});
 	});

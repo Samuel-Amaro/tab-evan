@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import orchestrator from '../../../../orchestrator';
+import webserver from '../../../../../infra/webserver';
 
 beforeAll(async () => {
 	await orchestrator.waitForAllServices();
@@ -8,7 +9,7 @@ beforeAll(async () => {
 describe('POST /api/v1/status', () => {
 	describe('Anonymous user', () => {
 		it('Retrieving current system status', async () => {
-			const response = await fetch('http://localhost:5173/api/v1/status', {
+			const response = await fetch(`${webserver.getOrigin()}/api/v1/status`, {
 				method: 'POST'
 			});
 			expect(response.status).toBe(405);
