@@ -3,7 +3,7 @@ import type { TypeUser } from '../types/user';
 import password from './password';
 import user from './user';
 
-async function getAuthenticateUser(providedEmail: string, providedPassword: string) {
+async function getUser(providedEmail: string, providedPassword: string) {
 	try {
 		const storedUser = await findUserByEmail(providedEmail);
 
@@ -56,7 +56,7 @@ async function getAuthenticateUser(providedEmail: string, providedPassword: stri
 }
 
 const authentication = {
-	getAuthenticateUser
+	getUser
 };
 
 export default authentication;

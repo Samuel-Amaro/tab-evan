@@ -9,6 +9,7 @@ import type { TypeEmailValues, TypeEmailValuesBody } from '../src/types/email';
 import activation from '../src/models/activation';
 import { FEATURES_USER } from '../src/types/user';
 import type { TypeUser } from '../src/types/user';
+import webserver from '../infra/webserver';
 
 const emailHttpUrl = `http://${import.meta.env.EMAIL_HTTP_HOST}:${import.meta.env.EMAIL_HTTP_PORT}`;
 
@@ -26,7 +27,7 @@ async function waitForAllServices() {
 		});
 
 		async function fetchStatusPage() {
-			const response = await fetch('http://localhost:5173/api/v1/status');
+			const response = await fetch(`${webserver.getOrigin()}/api/v1/status`);
 
 			if (response.status !== 200) {
 				throw Error();

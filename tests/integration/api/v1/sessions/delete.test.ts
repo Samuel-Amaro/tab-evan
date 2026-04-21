@@ -5,6 +5,7 @@ import session from '../../../../../src/models/session';
 import setCookieParser, { splitCookiesString } from 'set-cookie-parser';
 import type { TypeSessions } from '../../../../../src/types/sessions';
 import type { TypeUser } from '../../../../../src/types/user';
+import webserver from '../../../../../infra/webserver';
 
 beforeAll(async () => {
 	await orchestrator.waitForAllServices();
@@ -19,7 +20,7 @@ describe('DELETE /api/v1/sessions', () => {
 
 			const sessionObject = await orchestrator.createSession(createdUser.id);
 
-			const response = await fetch('http://localhost:5173/api/v1/sessions', {
+			const response = await fetch(`${webserver.getOrigin()}/api/v1/sessions`, {
 				method: 'DELETE',
 				headers: {
 					Cookie: `session_id=${sessionObject.token}`
@@ -66,7 +67,7 @@ describe('DELETE /api/v1/sessions', () => {
 				httpOnly: true
 			});
 
-			const doubleCheckResponse = await fetch('http://localhost:5173/api/v1/user', {
+			const doubleCheckResponse = await fetch(`${webserver.getOrigin()}/api/v1/user`, {
 				headers: {
 					Cookie: `session_id=${sessionObject.token}`
 				}
@@ -88,7 +89,7 @@ describe('DELETE /api/v1/sessions', () => {
 			const nonexistentToken =
 				'cbc86acc81b715cf3eabef43d67bd25bca6f1b0f892b1e52c4615e4ed29b8e953b806a310bf336d145351fab1d916a50';
 
-			const response = await fetch('http://localhost:5173/api/v1/sessions', {
+			const response = await fetch(`${webserver.getOrigin()}/api/v1/sessions`, {
 				method: 'DELETE',
 				headers: {
 					Cookie: `session_id=${nonexistentToken}`
@@ -124,7 +125,7 @@ describe('DELETE /api/v1/sessions', () => {
 			//volta o tempo para o atual
 			vi.useRealTimers();
 
-			const response = await fetch('http://localhost:5173/api/v1/sessions', {
+			const response = await fetch(`${webserver.getOrigin()}/api/v1/sessions`, {
 				method: 'DELETE',
 				headers: {
 					Cookie: `session_id=${sessionObject.token}`
